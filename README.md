@@ -1,15 +1,13 @@
 # Facebook Like Box
 
-Provides a shortcode, and a widget for adding the facebook likebox/stream to your site, using the facebook page plugin.
+Provides a shortcode, and a widget for adding the facebook likebox/stream to your site.
 
 ## Usage
-
-To use the shortcode or widget, you'll first need to create a facebook app and include the facebook javascript SDK on your site. 
 
 Add the `[FacebookFeed]` shortcode to your content, with any of the following parameters:
 
 ```
-	[FacebookFeed Href=http://www.facebook.com/silverstripe stream=true Height=1000 Width=500 AdaptContainerWidth=true ShowPagePosts=true ShowFaces=true HideCoverPhoto=true UseSmallHeader=true]
+	[FacebookFeed href=http://www.facebook.com/silverstripe stream=true height=1000 width=500 header=true boder_color=#ABCABC show_faces=true colorscheme=dark]
 ```
 
 The only main requirement is setting the href value to your facebook page.
@@ -25,4 +23,4 @@ Some likebox featuers won't show up if the chosen height is too short.
 
 ## Resources 
 
-https://developers.facebook.com/docs/plugins/page-plugin
+ * http://developers.facebook.com/docs/reference/plugins/like-box/

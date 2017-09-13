@@ -2,69 +2,67 @@
 
 class FacebookLikebox extends ViewableData
 {
-
     protected $parameters = array(
-        'Href' => 'http://www.facebook.com/platform',
-        'Width' => 300,
-        'Height' => 60,
-        'AdaptContainerWidth' => true,
-        'ShowPagePosts' => false,
-        'ShowFaces' => false,
-        'HideCoverPhoto' => true,
-        'UseSmallHeader' => true
+        'href'         => 'http://www.facebook.com/platform',
+        'width'        => 300,
+        'height'       => 60,
+        'show_faces'   => false,
+        'header'       => false,
+        'colorscheme'  => 'light',
+        'stream'       => false,
+        'border_color' => '#ffffff'
     );
 
-    public function __construct($parameters = null)
+    function __construct($parameters = null)
     {
         if ($parameters) {
             $this->setParameters($parameters);
         }
     }
 
-    public function setParameters($parameters)
+    function setParameters($parameters)
     {
-        $this->parameters = array_merge($this->parameters, $parameters);
-    }
-    
-    public function getAttributes()
-    {
-        $params = $this->parameters;
-
-        $attrs = array(
-            'data-href' => $params['Href']
-        );
-
-        $attrs['data-width'] = $params['Width'] ? $params['Width'] : '';
-        $attrs['data-height'] = $params['Height'] ? $params['Height'] : '';
-        $attrs['data-adapt-container-width'] = $params['AdaptContainerWidth'] ? 'true' : 'false';
-        $attrs['data-small-header'] = $params['UseSmallHeader'] ? 'true' : 'false';
-        $attrs['data-hide-cover'] = $params['HideCoverPhoto'] ? 'true' : 'false';
-        $attrs['data-show-facepile'] = $params['ShowFaces'] ? 'true' : 'false';
-        $attrs['data-show-posts'] = $params['ShowPagePosts'] ? 'true' : 'false';
-        
-        return $attrs;
+        $this->parameters = $parameters;
     }
 
-    public function getAttributesHTML()
+    function forTemplate()
     {
-        $attrs = $this->getAttributes();
+//        Debug::dump($this->parameters);
 
-        // Remove empty
-        $attrs = array_filter((array)$attrs, function ($v) {
-            return ($v || $v === 0 || $v === '0');
-        });
+        $template = new SSViewer("FacebookIframe");
+        return $template->process(new ArrayData(array(
+                'Src'         => $this->getSrc(),
+                'Width'       => isset($this->parameters['width']) ? $this->parameters['width'] : null,
+                'Height'      => isset($this->parameters['height']) ? $this->parameters['height'] : null,
+                'ShowFaces'   => isset($this->parameters['show_faces']) ? $this->parameters['show_faces'] : false,
+                'colorscheme' => isset($this->parameters['colorscheme']) ? $this->parameters['colorscheme'] : "light",
+                'href'        => isset($this->parameters['href']) ? $this->parameters['href'] : 'http://www.facebook.com/platform',
+                'stream'      => isset($this->parameters['stream']) ? $this->parameters['stream'] : null,
+                'header'      => isset($this->parameters['header']) ? $this->parameters['header'] : false
+        )));
+    }
 
-        // Create markkup
-        $parts = array();
-        foreach ($attrs as $name => $value) {
-            $parts[] = "{$name}=\"" . Convert::raw2att($value) . "\"";
+    function getSrc()
+    {
+        $likeboxurl = Director::protocol()."www.facebook.com/plugins/likebox.php";
+
+        $arguments = $this->parameters;
+
+        // adjust defaults, depending on whether the stream is visible
+        // so that everything fits in desired dimensions
+        if (!isset($arguments['height'])) {
+            if (isset($arguments['stream']) && $arguments['stream']) {
+                $arguments['height'] = 486;
+                if ($arguments['header']) $arguments['height'] += 30;
+            }elseif ($arguments['show_faces']) {
+                $arguments['height'] = 186;
+                if ($arguments['header']) $arguments['height'] += 30;
+            }
         }
+        $arguments['css'] = 'http://hcceventstemplate.uatlinux.gdmedia.tv/facebook_likebox/test.css';
 
-        return implode(' ', $parts);
-    }
 
-    public function forTemplate()
-    {
-        return $this->renderWith('FacebookLikebox');
+
+        return $likeboxurl."?".str_replace("&", "&amp;", http_build_query($arguments));
     }
 }

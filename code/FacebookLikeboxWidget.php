@@ -1,67 +1,64 @@
 <?php
 
-if (class_exists("Widget")) {
-    class FacebookLikeboxWidget extends Widget
-    {
+if(class_exists("Widget")){
 
-        private static $cmstitle = "Facebook Likebox";
-        
-        private static $db = array(
-            'Href' => 'Text',
-            'Width' => 'Int',
-            'Height' => 'Int',
-            'AdaptContainerWidth' => 'Boolean',
-            'ShowPagePosts' => 'Boolean',
-            'ShowFaces' => 'Boolean',
-            'HideCoverPhoto' => 'Boolean',
-            'UseSmallHeader' => 'Boolean'
-        );
+	class FacebookLikeboxWidget extends Widget{
 
-        private static $defaults = array(
-            'ShowFaces' => false,
-            'Header' => false
-        );
+		private static $cmstitle = "Facebook Likebox";
+		
+		private static $db = array(
+			'Href' => 'Text',
+			'Width' => 'Int',
+			'Height' => 'Int',
+			'ShowStream' => 'Boolean',
+			'ShowFaces' => 'Boolean',
+			'ShowHeader' => 'Boolean',
+			'ShowBorder' => 'Boolean'
+		);
 
-        public function getCMSFields()
-        {
-            $fields = parent::getCMSFields();
-            $fields->merge(new FieldList(
-                TextField::create("Href", "Facebook Page URL")
-                    ->setRightTitle("eg: http://www.facebook.com/mypage"),
-                CheckboxField::create('ShowPagePosts')
-                    ->setDescription("i.e. the latest posts and images"),
-                CheckboxField::create('ShowFaces'),
-                CheckboxField::create('HideCoverPhoto'),
-                CheckboxField::create('UseSmallHeader'),
-                NumericField::create('Width'),
-                NumericField::create('Height'),
-                CheckboxField::create('AdaptContainerWidth')
-                    ->setDescription('Plugin will try to fit the full width of the container'),
-                LiteralField::create('HeightWarning',
-                    '<p class="message">note: some features will not be visible if the chosen height is too short.</p>'
-                )
-            ));
-            return $fields;
-        }
+		private static $defaults = array(
+			'ShowFaces' => false,
+			'Header' => false
+		);
 
-        public function getLikebox()
-        {
-            $lb = new FacebookLikebox();
-            $lb->setParameters(array(
-                'Href' => $this->Href,
-                'Width' => $this->Width,
-                'Height' => $this->Height,
-                'AdaptContainerWidth' => $this->AdaptContainerWidth,
-                'ShowPagePosts' => $this->ShowPagePosts,
-                'ShowFaces' => $this->ShowFaces,
-                'HideCoverPhoto' => $this->HideCoverPhoto,
-                'UseSmallHeader' => $this->UseSmallHeader
-            ));
-            return $lb;
-        }
+		function getCMSFields(){
+			$fields = parent::getCMSFields();
+			$fields->merge(new FieldList(
+				TextField::create("Href","Facebook Page URL")
+					->setRightTitle("eg: http://www.facebook.com/mypage")
+				,
+				CheckboxField::create('ShowStream',"Show stream")
+					->setRightTitle("i.e. the latest posts and images"),
+				CheckboxField::create('ShowFaces',"Show faces"),
+				CheckboxField::create('ShowHeader', "Show header"),
+				CheckboxField::create('ShowBorder', "Show border"),
+				NumericField::create('Width'),
+				NumericField::create('Height'),
+				LiteralField::create('HeightWarning',
+					'<p class="message">note: some features will not be visible if the chosen height is too short.</p>'
+				)
+			));
+			return $fields;
+		}
 
-        public function getTitle()
-        {
-        }
-    }
+		function getLikebox(){
+			$lb = new FacebookLikebox();
+			$lb->setParameters(array(
+				'href' => $this->Href,
+				'stream' => $this->ShowStream,
+				'width' => $this->Width,
+				'height' => $this->Height,
+				'show_faces' => $this->ShowFaces,
+				'header' => $this->ShowHeader,
+				'show_border' => $this->ShowBorder
+			));
+			return $lb;
+		}
+
+		function getTitle(){
+
+		}	
+
+	}
+
 }
